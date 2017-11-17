@@ -28,9 +28,7 @@ class EncargoController extends Controller{
             'fecha_plazo' => $request->input('fecha_plazo'),
         ]);
         $encargo->save();
-        // $encargo = Encargo::create($request->all());  
         return response()->json(['status'=>true,'encargo guardado'],200);
-        // dd($request);
     }
   
     public function deleteEncargo($id) {
