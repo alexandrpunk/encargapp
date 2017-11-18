@@ -11,8 +11,8 @@ class UsuarioController extends Controller{
   
   
     public function index() {  
-        $usuario  = Usuario::all();
-        return response()->json($usuario);  
+        $usuarios  = Usuario::all();
+        return response()->json(['status'=>true,'usuarios'=>$usuarios],200);
     }
   
     public function get($id) {  

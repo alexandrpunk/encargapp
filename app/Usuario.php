@@ -7,14 +7,14 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Auth\Passwords\CanResetPassword;
-// use Illuminate\Notifications\Notifiable;
+use Illuminate\Notifications\Notifiable;
 use App\Notifications\RestablecerPassword;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 
 class Usuario extends Model implements AuthenticatableContract, CanResetPasswordContract {
-    use Authenticatable, CanResetPassword, SoftDeletes;
-    // use Authenticatable, CanResetPassword, Notifiable, SoftDeletes;
+    #use Authenticatable, CanResetPassword, SoftDeletes;
+    use Authenticatable, CanResetPassword, Notifiable, SoftDeletes;
 
     protected $table = 'usuarios';
     protected $fillable = [
@@ -31,7 +31,16 @@ class Usuario extends Model implements AuthenticatableContract, CanResetPassword
         $this->notify(new RestablecerPassword($token));
     }
     public function setPasswordAttribute($value) {
-        $this->attributes['password'] = bcrypt($value);
+        $this->attributes['password'] = app('hash')->make($value);
+    }
+    public function setNombreAttribute($value) {
+        $this->attributes['nombre'] =strtolower($value);
+    }
+    public function setApellidoAttribute($value) {
+        $this->attributes['apellido'] =strtolower($value);
+    }
+    public function setEmailAttribute($value) {
+        $this->attributes['email'] =strtolower($value);
     }
 
     public function verificado() {

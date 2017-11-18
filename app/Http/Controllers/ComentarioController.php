@@ -12,7 +12,7 @@ class ComentarioController extends Controller{
   
     public function index() {  
         $comentarios  = Comentario::all();
-        return response()->json($comentarios);  
+        return response()->json(['status'=>true,'comentarios'=>$comentarios],200);
     }
   
     public function get($id) {  

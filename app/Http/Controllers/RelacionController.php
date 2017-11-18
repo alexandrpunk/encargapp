@@ -12,7 +12,7 @@ class RelacionController extends Controller{
   
     public function index() {
         $relaciones  = Relacion::all();
-        return response()->json($relaciones);  
+        return response()->json(['status'=>true,'relaciones'=>$relaciones],200);
     }
   
     public function get($id) {  

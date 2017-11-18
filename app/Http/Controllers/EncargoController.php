@@ -12,8 +12,9 @@ class EncargoController extends Controller{
   
     public function index() {  
         $encargos  = Encargo::all();
-        return response()->json($encargos);  
+        return response()->json(['status'=>true,'encargos'=>$encargos],200);
     }
+
   
     public function get($id) {  
         $encargo  = Encargo::find($id);  

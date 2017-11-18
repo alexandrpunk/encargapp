@@ -28,6 +28,7 @@ $app->withFacades();
 $app->withEloquent();
 
 $app->register(Appzcoder\LumenRoutesList\RoutesCommandServiceProvider::class);
+$app->register(Illuminate\Notifications\NotificationServiceProvider::class);
 
 
 /*
