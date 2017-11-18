@@ -28,6 +28,8 @@ $app->withFacades();
 $app->withEloquent();
 
 $app->register(Appzcoder\LumenRoutesList\RoutesCommandServiceProvider::class);
+
+
 /*
 |--------------------------------------------------------------------------
 | Register Container Bindings

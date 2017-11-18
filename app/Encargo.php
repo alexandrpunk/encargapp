@@ -17,6 +17,7 @@ class Encargo extends Model {
         'encargo', 'id_asignador', 'id_responsable', 'visto', 'mute', 'fecha_conclusion', 'ultima_notificacion',  'fecha_plazo'
     ];
     protected $dates = ['deleted_at'];
+    protected $appends = ['estado'];
     
     
     public function asignador() {
@@ -35,8 +36,7 @@ class Encargo extends Model {
             $this->update(['mute'=> false]);
         } else {
             $this->update(['mute'=> true]);
-        }
-        
+        }        
     }
 
     public function getEstadoAttribute() {

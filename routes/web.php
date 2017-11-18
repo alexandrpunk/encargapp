@@ -15,10 +15,32 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->group(['prefix' => 'api/v1'], function($app) { 
+$router->group(['prefix' => 'api/v1'], function($app) {
+    #usuarios
+    $app->get('usuario','UsuarioController@index');  
+    $app->get('usuario/{id}','UsuarioController@get');      
+    $app->post('usuario','UsuarioController@create');      
+    $app->put('usuario/{id}','UsuarioController@update');      
+    $app->delete('usuario/{id}','UsuarioController@delete');
+
+    #encargos
     $app->get('encargo','EncargoController@index');  
-    $app->get('encargo/{id}','EncargoController@getEncargo');      
-    $app->post('encargo','EncargoController@createEncargo');      
-    $app->put('encargo/{id}','EncargoController@updateEncargo');      
-    $app->delete('encargo/{id}','EncargoController@deleteEncargo');
+    $app->get('encargo/{id}','EncargoController@get');      
+    $app->post('encargo','EncargoController@create');      
+    $app->put('encargo/{id}','EncargoController@update');      
+    $app->delete('encargo/{id}','EncargoController@delete');
+
+    #relaciones
+    $app->get('relacion','RelacionController@index');  
+    $app->get('relacion/{id}','RelacionController@get');      
+    $app->post('relacion','RelacionController@create');      
+    $app->put('relacion/{id}','RelacionController@update');      
+    $app->delete('relacion/{id}','RelacionController@delete');
+
+    #comentarios
+    $app->get('comentario','ComentarioController@index');  
+    $app->get('comentario/{id}','ComentarioController@get');      
+    $app->post('comentario','ComentarioController@create');      
+    $app->put('comentario/{id}','ComentarioController@update');      
+    $app->delete('comentario/{id}','ComentarioController@delete');
 });

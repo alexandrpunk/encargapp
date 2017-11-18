@@ -2,45 +2,45 @@
   
 namespace App\Http\Controllers;
   
-use App\Encargo;
+use App\Usuario;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
   
   
-class EncargoController extends Controller{
+class UsuarioController extends Controller{
   
   
     public function index() {  
-        $encargos  = Encargo::all();
-        return response()->json($encargos);  
+        $usuario  = Usuario::all();
+        return response()->json($usuario);  
     }
   
     public function get($id) {  
-        $encargo  = Encargo::find($id);  
-        return response()->json($encargo);
+        $usuario  = Usuario::find($id);  
+        return response()->json($usuario);
     }
   
     public function create(Request $request) {
         try {
-          Encargo::create($request->all()); 
+          Usuario::create($request->all()); 
         } catch (QueryException $e) {
             return response()->json(['status'=>false,'error'=>$e],500);
         }
-        return response()->json(['status'=>true,'encargo creado'],200);
+        return response()->json(['status'=>true,'usuario creado'],200);
     }
   
     public function delete($id) {
-        $encargo  = Encargo::find($id);
-        $encargo->delete(); 
-        return response()->json('deleted');
+        $usuario  = Usuario::find($id);
+        $usuario->delete(); 
+        return response()->json(['status'=>true,'usuario borado'],200);
     }
   
     public function update(Request $request,$id) {
         try {
-            Encargo::find($id)->update($request->all());
+            Usuario::find($id)->update($request->all());
         } catch (QueryException $e) {
                 return response()->json(['status'=>false,'error'=>$e],500);
         }        
-        return response()->json(['status'=>true,'encargo actualizado'],200);
+        return response()->json(['status'=>true,'usuario actualizado'],200);
     }  
 }

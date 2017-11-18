@@ -7,13 +7,14 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Auth\Passwords\CanResetPassword;
-use Illuminate\Notifications\Notifiable;
+// use Illuminate\Notifications\Notifiable;
 use App\Notifications\RestablecerPassword;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 
 class Usuario extends Model implements AuthenticatableContract, CanResetPasswordContract {
-    use Authenticatable, CanResetPassword, Notifiable, SoftDeletes;
+    use Authenticatable, CanResetPassword, SoftDeletes;
+    // use Authenticatable, CanResetPassword, Notifiable, SoftDeletes;
 
     protected $table = 'usuarios';
     protected $fillable = [
@@ -23,6 +24,8 @@ class Usuario extends Model implements AuthenticatableContract, CanResetPassword
         'password', 'remember_token',
     ];
     protected $dates = ['deleted_at'];
+
+    // protected $appends = ['contactos' => 'hola mundo'];
 
     public function sendPasswordResetNotification($token) {
         $this->notify(new RestablecerPassword($token));
@@ -41,12 +44,12 @@ class Usuario extends Model implements AuthenticatableContract, CanResetPassword
         return $this->hasMany('App\Encargo', 'id_asignador');
     }
     
-    public function tareas() {
+    public function pendientes() {
         return $this->hasMany('App\Encargo', 'id_responsable');
     }
     
     public function contactos() {
-        return $this->hasMany('App\Relacionusuario', 'id_usuario1');
+        return $this->hasMany('App\Relacion', 'id_usuario');
     }
         
     public function comentarios() {
