@@ -1,5 +1,5 @@
 <?php
-
+use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -15,32 +15,48 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->group(['prefix' => 'api/v1'], function($app) {
+
+
+$router->group(['prefix' => 'api/v1','middleware' => 'jwt.auth'], function($router) {
+    $router->get('/hola', function (Request $request) use ($router) {
+        return 'usuario logueado '.$request->auth;
+        // return view('hola', ['user' => $request->auth]);
+    });
+});
+
+$router->group(['prefix' => 'api/v1'], function($router) {
+    $router->post('auth/login','AuthController@authenticate');
+    $router->post('auth/recover/{email}','AuthController@recover');
+    $router->get('auth/validate/{token}',[
+        'as' => 'validar_email', 'uses' => 'AuthController@validar'
+    ]);
+    // $router->post('auth/reset','AuthController@reset');
+
     #usuarios
-    $app->get('usuario','UsuarioController@index');  
-    $app->get('usuario/{id}','UsuarioController@get');      
-    $app->post('usuario','UsuarioController@create');      
-    $app->put('usuario/{id}','UsuarioController@update');      
-    $app->delete('usuario/{id}','UsuarioController@delete');
+    $router->get('usuario','UsuarioController@index');  
+    $router->get('usuario/{id}','UsuarioController@get');         
+    $router->post('usuario','UsuarioController@create');      
+    $router->put('usuario/{id}','UsuarioController@update');      
+    $router->delete('usuario/{id}','UsuarioController@delete');
 
     #encargos
-    $app->get('encargo','EncargoController@index');  
-    $app->get('encargo/{id}','EncargoController@get');      
-    $app->post('encargo','EncargoController@create');      
-    $app->put('encargo/{id}','EncargoController@update');      
-    $app->delete('encargo/{id}','EncargoController@delete');
+    $router->get('encargo','EncargoController@index');  
+    $router->get('encargo/{id}','EncargoController@get');      
+    $router->post('encargo','EncargoController@create');      
+    $router->put('encargo/{id}','EncargoController@update');      
+    $router->delete('encargo/{id}','EncargoController@delete');
 
     #relaciones
-    $app->get('relacion','RelacionController@index');  
-    $app->get('relacion/{id}','RelacionController@get');      
-    $app->post('relacion','RelacionController@create');      
-    $app->put('relacion/{id}','RelacionController@update');      
-    $app->delete('relacion/{id}','RelacionController@delete');
+    $router->get('relacion','RelacionController@index');  
+    $router->get('relacion/{id}','RelacionController@get');      
+    $router->post('relacion','RelacionController@create');      
+    $router->put('relacion/{id}','RelacionController@update');      
+    $router->delete('relacion/{id}','RelacionController@delete');
 
     #comentarios
-    $app->get('comentario','ComentarioController@index');  
-    $app->get('comentario/{id}','ComentarioController@get');      
-    $app->post('comentario','ComentarioController@create');      
-    $app->put('comentario/{id}','ComentarioController@update');      
-    $app->delete('comentario/{id}','ComentarioController@delete');
+    $router->get('comentario','ComentarioController@index');  
+    $router->get('comentario/{id}','ComentarioController@get');      
+    $router->post('comentario','ComentarioController@create');      
+    $router->put('comentario/{id}','ComentarioController@update');      
+    $router->delete('comentario/{id}','ComentarioController@delete');
 });
