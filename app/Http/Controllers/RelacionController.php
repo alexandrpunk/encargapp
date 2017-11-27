@@ -2,11 +2,12 @@
   
 namespace App\Http\Controllers;
   
+use App\Usuario;
 use App\Relacion;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-  
-  
+use App\Http\Controllers\Controller;
+use Illuminate\Database\QueryException;
+
 class RelacionController extends Controller{
   
   
@@ -16,17 +17,18 @@ class RelacionController extends Controller{
     }
   
     public function get($id) {  
-        $relacion  = Relacion::find($id);  
-        return response()->json($relacion);
+        $relaciones  = Relacion::where('usuario',$id)->get();
+        return response()->json(['status'=>true,'relaciones'=>$relaciones],200);
     }
   
     public function create(Request $request) {
         try {
-          Relacion::create($request->all()); 
+          Relacion::create(['id_usuario'=>$request->usuario,'id_contacto'=>$request->contacto,'status'=>1]);
+          Relacion::create(['id_usuario'=>$request->contacto,'id_contacto'=>$request->usuario,'status'=>1]);
         } catch (QueryException $e) {
-            return response()->json(['status'=>false,'error'=>$e],500);
+            return response()->json(['status'=>false,'error'=>$e->errorInfo],500);
         }
-        return response()->json(['status'=>true,'relacion creado'],200);
+        return response()->json(['status'=>true,'relacion creada'],200);
     }
   
     public function delete($id) {
@@ -39,8 +41,13 @@ class RelacionController extends Controller{
         try {
             Relacion::find($id)->update($request->all());
         } catch (QueryException $e) {
-                return response()->json(['status'=>false,'error'=>$e],500);
+                return response()->json(['status'=>false,'error'=>$e->errorInfo],500);
         }        
         return response()->json(['status'=>true,'relacion actualizado'],200);
-    }  
+    }
+
+    public function getContactos (Request $request) {
+        $contactos = Relacion::with('contacto')->where('id_usuario',$request->auth->id)->get();
+        return response()->json(['status'=>true,'contactos'=>$contactos],200);
+    }
 }

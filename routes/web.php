@@ -22,6 +22,9 @@ $router->group(['prefix' => 'api/v1','middleware' => 'jwt.auth'], function($rout
         return 'usuario logueado '.$request->auth;
         // return view('hola', ['user' => $request->auth]);
     });
+
+    $router->post('relacion','RelacionController@create');  
+    $router->get('relacion/contactos','RelacionController@getContactos');  
 });
 
 $router->group(['prefix' => 'api/v1'], function($router) {
@@ -49,7 +52,7 @@ $router->group(['prefix' => 'api/v1'], function($router) {
     #relaciones
     $router->get('relacion','RelacionController@index');  
     $router->get('relacion/{id}','RelacionController@get');      
-    $router->post('relacion','RelacionController@create');      
+        
     $router->put('relacion/{id}','RelacionController@update');      
     $router->delete('relacion/{id}','RelacionController@delete');
 
