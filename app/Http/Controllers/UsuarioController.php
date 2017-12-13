@@ -9,9 +9,6 @@ use App\Notifications\Invitacion;
 use App\Notifications\ValidarEmail;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\QueryException;
-use Illuminate\Contracts\Auth\PasswordBroker;
-use Illuminate\Foundation\Auth\ResetsPasswords;
-use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 
 class UsuarioController extends Controller{
   
@@ -30,7 +27,7 @@ class UsuarioController extends Controller{
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|max:100',
             'apellido' => 'required|max:100',
-            'email' => 'required|max:100|unique:Usuarios|email',
+            'email' => 'required|max:100|unique:usuarios|email',
             'telefono' => 'digits:10|nullable',
             'password' => 'required|min:8|max:15'
         ]);
@@ -82,5 +79,10 @@ class UsuarioController extends Controller{
                 return response()->json(['status'=>false,'error'=>$e],500);
         }        
         return response()->json(['status'=>true,'usuario actualizado'],200);
-    }  
+    }
+    
+    // public function test() {
+    //     $usuario  = Usuario::find(5);
+    //     $usuario->notify(new ValidarEmail());
+    // }
 }

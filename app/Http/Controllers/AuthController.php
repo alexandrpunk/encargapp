@@ -1,61 +1,37 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use DB;
+use DateTime;
 use Validator;
 use App\Usuario;
 use App\Relacion;
 use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
 use Firebase\JWT\ExpiredException;
+use App\Notifications\RestablecerPassword;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Lumen\Routing\Controller;
 
 class AuthController extends Controller {
-    /**
-     * The request instance.
-     *
-     * @var \Illuminate\Http\Request
-     */
+
     private $request;
 
-    /**
-     * Create a new controller instance.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return void
-     */
     public function __construct(Request $request) {
         $this->request = $request;
     }
 
-    /**
-     * Create a new token.
-     * 
-     * @param  \App\Usuario   $usuario
-     * @return string
-     */
     protected function jwt(Usuario $usuario) {
         $payload = [
             'iss' => "encargapp", // Issuer of the token
             'sub' => $usuario->id, // Subject of the token
             'iat' => time(), // Time when JWT was issued. 
             'exp' =>  time() + 31536000 * 2 // el segundo valor es la duracion en años del token
-            // 'exp' => time() + 60*60 // Expiration time
         ];
-        
-        // As you can see we are passing `JWT_SECRET` as the second parameter that will 
-        // be used to decode the token in the future.
         return JWT::encode($payload, env('JWT_SECRET'));
     } 
 
-    /**
-     * Authenticate a Usuario and return the token if the provided credentials are correct.
-     * 
-     * @param  \App\Usuario   $usuario 
-     * @return mixed
-     */
-    public function authenticate(Usuario $usuario) {
+    public function authenticate() {
         $this->validate($this->request, [
             'email'     => 'required|email',
             'password'  => 'required'
@@ -65,10 +41,6 @@ class AuthController extends Controller {
         $usuario = Usuario::where('email', $this->request->input('email'))->first();
 
         if (!$usuario) {
-            // You wil probably have some sort of helpers or whatever
-            // to make sure that you have the same response format for
-            // differents kind of responses. But let's return the 
-            // below respose for now.
             return response()->json([
                 'error' => 'Email does not exist.'
             ], 400);
@@ -91,7 +63,7 @@ class AuthController extends Controller {
         try {
             $usuario = Usuario::where('email_token',$token)->firstOrFail();
         } catch (ModelNotFoundException $e) {
-            return response()->json(['validated'=>false,'error'=>'El usuario ya esta verificado, no existe o el enlace es incorrecto'],500);
+            return response()->json(['validated'=>false,'error'=>'El usuario ya esta verificado, no existe o el enlace es incorrecto'],404);
         }
 
         $usuario->verificado();
@@ -111,5 +83,23 @@ class AuthController extends Controller {
 
         // Auth::login($usuario, true);
         return response()->json(['validated'=>true,'message'=>'Usuario validado, ya puede iniciar sesion'],200);
+    }
+
+    public function requestPasswordReset (Request $request) {
+        try {
+            $usuario = Usuario::where('email', $request->email)->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['validated'=>false,'error'=>'Este correo no esta registrado'],404);
+        }
+        $token = str_random(32);
+        $now = new DateTime();
+        DB::table('usuarios_password_resets')->insert(
+            ['email' => $usuario->email, 'token' => $token, 'created_at' => $now]
+        );
+        $usuario->notify(new RestablecerPassword($token));
+        return response()->json(['validated'=>true,'message'=>'Se ha enviado un enlace para restablecer la contraseña'],200);
+    }
+    public function resetPassword (Request $request) {
+
     }
 }
