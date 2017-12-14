@@ -13,6 +13,7 @@ use App\Notifications\RestablecerPassword;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Lumen\Routing\Controller;
 
+
 class AuthController extends Controller {
 
     private $request;
@@ -99,7 +100,18 @@ class AuthController extends Controller {
         $usuario->notify(new RestablecerPassword($token));
         return response()->json(['validated'=>true,'message'=>'Se ha enviado un enlace para restablecer la contraseña'],200);
     }
-    public function resetPassword (Request $request) {
-
+    
+    public function resetPassword (Request $request, $token) {
+        $tokenDate = DB::select('select created_at from usuarios_password_resets where token = "'.$token.'"');
+        $dbdate = strtotime($tokenDate[0]->created_at);
+        // return $dbdate."\n".$tokenDate[0]->created_at;
+        if (time() - $dbdate > 15 * 60) {
+            return 'token expirado';
+        }else{
+            return 'token valido';
+        }
+        
     }
 }
+// 1513201991
+// 1513217695

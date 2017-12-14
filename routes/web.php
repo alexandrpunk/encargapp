@@ -15,10 +15,6 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->get('/test', function (Request $request) use ($router) {
-    return view('hola');
-});
-
 $router->group(['prefix' => 'api/v1','middleware' => 'jwt.auth'], function($router) {
     $router->get('/hola', function (Request $request) use ($router) {
         return 'usuario logueado '.$request->auth;
@@ -31,12 +27,6 @@ $router->group(['prefix' => 'api/v1','middleware' => 'jwt.auth'], function($rout
 $router->group(['prefix' => 'api/v1'], function($router) {
     $router->post('auth/login','AuthController@authenticate');
     $router->post('auth/recover/','AuthController@requestPasswordReset');
-
-    $router->get('auth/recover/{token}',[
-        'as' => 'reset_pass', 'uses' => 'AuthController@validar'
-    ]);
-    $router->post('auth/recover/{token}','AuthController@resetPassword');
-
     $router->get('auth/validate/{token}',[
         'as' => 'validar_email', 'uses' => 'AuthController@validar'
     ]);
@@ -72,3 +62,12 @@ $router->group(['prefix' => 'api/v1'], function($router) {
 
     // $router->get('test','UsuarioController@test'); 
 });
+
+$router->get('/test', function (Request $request) use ($router) {
+    return view('hola');
+});
+$router->get('auth/recover/{token}',[
+    'as' => 'reset_pass', function (Request $request) {
+        return view('recover',['url' =>  $request->url()]);
+}]);
+$router->post('auth/recover/{token}','AuthController@resetPassword');
