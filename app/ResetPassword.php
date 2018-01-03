@@ -13,9 +13,10 @@ class ResetPassword extends Model {
     protected $fillable = [
         'email', 'token'
     ];
-    protected $hidden = [
-        'created_at'
-    ];
+
+    public function setUpdatedAtAttribute($value) {
+        // to Disable updated_at
+    }
     
     public function usuario() {
         return $this->belongsTo('App\Usuario', 'email', 'email');

@@ -68,6 +68,6 @@ $router->get('/test', function (Request $request) use ($router) {
 });
 $router->get('auth/recover/{token}',[
     'as' => 'reset_pass', function (Request $request) {
-        return view('recover',['url' =>  $request->url()]);
+        return view('auth.recover',['url' =>  $request->url()]);
 }]);
 $router->post('auth/recover/{token}','AuthController@resetPassword');

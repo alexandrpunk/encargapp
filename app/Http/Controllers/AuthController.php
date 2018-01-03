@@ -6,12 +6,14 @@ use DateTime;
 use Validator;
 use App\Usuario;
 use App\Relacion;
+use App\ResetPassword;
 use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
 use Firebase\JWT\ExpiredException;
 use App\Notifications\RestablecerPassword;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Lumen\Routing\Controller;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
 class AuthController extends Controller {
@@ -93,25 +95,29 @@ class AuthController extends Controller {
             return response()->json(['validated'=>false,'error'=>'Este correo no esta registrado'],404);
         }
         $token = str_random(32);
-        $now = new DateTime();
-        DB::table('usuarios_password_resets')->insert(
-            ['email' => $usuario->email, 'token' => $token, 'created_at' => $now]
-        );
+        ResetPassword::create(['email'=>$usuario->email,'token'=>$token]);
         $usuario->notify(new RestablecerPassword($token));
         return response()->json(['validated'=>true,'message'=>'Se ha enviado un enlace para restablecer la contraseña'],200);
     }
     
     public function resetPassword (Request $request, $token) {
-        $tokenDate = DB::select('select created_at from usuarios_password_resets where token = "'.$token.'"');
-        $dbdate = strtotime($tokenDate[0]->created_at);
-        // return $dbdate."\n".$tokenDate[0]->created_at;
-        if (time() - $dbdate > 15 * 60) {
-            return 'token expirado';
+        try {
+            $solicitudReset = ResetPassword::where('token',$token)->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            return view('base.message',[
+                'message' => 'El token para restablecer tu contraseña es invalido, vuelve a solicitar la recuperacion de contraseña para que se te envie uno a tu email.',
+                'titulo' => 'Token invalido'
+            ]);
+        }
+        $dbdate = strtotime($solicitudReset->created_at);
+        if (time() - $dbdate > 30 * 60) {
+            return view('base.message',[
+                'message' => 'El token para reestablecer tu contraseña a expirado, vuelve a solicitar la recuperacion de contraseña.',
+                'titulo' => 'Token expirado'
+            ]);
         }else{
             return 'token valido';
         }
         
     }
 }
-// 1513201991
-// 1513217695
