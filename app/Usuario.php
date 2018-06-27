@@ -18,10 +18,10 @@ class Usuario extends Model implements AuthenticatableContract, CanResetPassword
 
     protected $table = 'usuarios';
     protected $fillable = [
-        'nombre', 'apellido', 'email', 'email_token', 'telefono', 'password', 'status'
+        'nombre', 'apellido', 'email', 'email_token', 'telefono', 'password'
     ];
     protected $hidden = [
-        'password', 'remember_token', 'email_token', 'created_at', 'updated_at', 'deleted_at'
+        'password', 'remember_token', 'email_token', 'created_at', 'updated_at', 'deleted_at', 'status'
     ];
     protected $dates = ['deleted_at'];
 

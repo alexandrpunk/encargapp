@@ -31,6 +31,7 @@ class Encargo extends Model {
     public function comentarios() {
         return $this->hasMany('App\Comentario', 'id_encargo');
     }
+    
     public function silenciar() {
         if ($this->mute) {
             $this->update(['mute'=> false]);

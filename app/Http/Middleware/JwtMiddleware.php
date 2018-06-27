@@ -10,7 +10,7 @@ use Firebase\JWT\ExpiredException;
 
 class JwtMiddleware {
     public function handle($request, Closure $next, $guard = null) {
-        $token = $request->get('token');
+        $token = $request->header('auth');
         
         if(!$token) {
             // Unauthorized response if token not there

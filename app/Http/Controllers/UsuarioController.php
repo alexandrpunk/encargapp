@@ -13,14 +13,14 @@ use Illuminate\Database\QueryException;
 class UsuarioController extends Controller{
   
   
-    public function index() {  
-        $usuarios  = Usuario::all();
-        return response()->json(['status'=>true,'usuarios'=>$usuarios],200);
-    }
+    // public function index() {  
+    //     $usuarios  = Usuario::all();
+    //     return response()->json(['status'=>true,'usuarios'=>$usuarios],200);
+    // }
   
     public function get($id) {  
         $usuario  = Usuario::find($id);  
-        return response()->json($usuario);
+        return response()->json(['user_data'=>$usuario],200);
     }
   
     public function create (Request $request) {
@@ -54,35 +54,30 @@ class UsuarioController extends Controller{
                 if ($usuario->status == 2 ) {#si tiene estado 2 quiere decir que es una invitacion pendiente
                     $usuario->update($data); #se registra el usuario
                 } else if ($usuario->status == 3) {
-                    return response()->json(['registro'=>false, 'errors' => 'Este usuario esta registrado pero falta verificar su correo (revisa en tu bandeja de trada).'],500);
+                    return response()->json(['errors' => 'Este usuario esta registrado pero falta verificar su correo (revisa en tu bandeja de trada).'],500);
                 } else {
-                    return response()->json(['registro'=>false, 'errors' => 'El correo electronico que intentas usar ya esta en uso.'],500);
+                    return response()->json(['errors' => 'El correo electronico que intentas usar ya esta en uso.'],500);
                 } 
             } else {
-                return response()->json(['registro'=>false, 'errors' =>$validator->errors()],500);
+                return response()->json(['errors' =>$validator->errors()],500);
             }
         }
         $usuario->notify(new ValidarEmail());
-        return response()->json(['registro'=>true,'usuario creado'],200);
+        return response()->json(['message'=>'usuario creado'],200);
     }
   
     public function delete($id) {
         $usuario  = Usuario::find($id);
         $usuario->delete(); 
-        return response()->json(['status'=>true,'usuario borado'],200);
+        return response()->json(['message'=>'usuario borado'],200);
     }
   
     public function update(Request $request,$id) {
         try {
             Usuario::find($id)->update($request->all());
         } catch (QueryException $e) {
-                return response()->json(['status'=>false,'error'=>$e],500);
+                return response()->json(['error'=>$e],500);
         }        
-        return response()->json(['status'=>true,'usuario actualizado'],200);
+        return response()->json(['message'=>'usuario actualizado'],200);
     }
-    
-    // public function test() {
-    //     $usuario  = Usuario::find(5);
-    //     $usuario->notify(new ValidarEmail());
-    // }
 }

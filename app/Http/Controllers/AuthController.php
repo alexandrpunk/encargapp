@@ -35,13 +35,14 @@ class AuthController extends Controller {
     } 
 
     public function authenticate() {
+
         $this->validate($this->request, [
             'email'     => 'required|email',
             'password'  => 'required'
         ]);
 
         // Find the Usuario by email
-        $usuario = Usuario::where('email', $this->request->input('email'))->first();
+        $usuario = Usuario::where('email', $this->request->email)->first();
 
         if (!$usuario) {
             return response()->json([
@@ -50,7 +51,7 @@ class AuthController extends Controller {
         }
 
         // Verify the password and generate the token
-        if (Hash::check($this->request->input('password'), $usuario->password)) {
+        if (Hash::check($this->request->password, $usuario->password)) {
             return response()->json([
                 'token' => $this->jwt($usuario)
             ], 200);
